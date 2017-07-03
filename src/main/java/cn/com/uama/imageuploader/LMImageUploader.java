@@ -1,7 +1,6 @@
 package cn.com.uama.imageuploader;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,8 +22,13 @@ public class LMImageUploader {
 
     private static OkHttpClient client;
     private static String uploadUrl;
+    private static Gson gson;
 
+    /**
+     * 根据配置类进行初始化操作
+     */
     public static void init(Config config) {
+        if (client != null) return;
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
         if (config != null) {
             for (Interceptor interceptor : config.interceptors()) {
@@ -32,10 +36,20 @@ public class LMImageUploader {
             }
         }
         client = clientBuilder.build();
+        gson = new Gson();
         uploadUrl = "http://121.40.102.80:7888/upload";
     }
 
+    /**
+     * 上传图片
+     * @param pathList 待上传的图片路径列表
+     * @param type 类型
+     * @param listener 回调接口
+     */
     public static void upload(List<String> pathList, String type, final UploadListener listener) {
+        if (client == null) {
+            throw new IllegalStateException("not initialized, call LMImageUploader.init(Config config) first!");
+        }
         MultipartBody.Builder requestBodyBuilder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("type", type);
@@ -57,21 +71,25 @@ public class LMImageUploader {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
-                    ResponseBody body = response.body();
-                    JSONObject jsonObject = new JSONObject(body.string());
-                    int status = jsonObject.getInt("status");
-                    String message = jsonObject.getString("msg");
-                    if (status == 100) {
-                        JSONArray data = jsonObject.getJSONArray("data");
-                        List<String> imageUrls = new ArrayList<>();
-                        for (Object o : data) {
-                            imageUrls.add((String) o);
+                    try {
+                        ResponseBody body = response.body();
+                        UploadResultBean uploadResultBean = gson.fromJson(body.charStream(), UploadResultBean.class);
+                        int status = uploadResultBean.getStatus();
+                        String message = uploadResultBean.getMsg();
+                        if (status == 100) {
+                            if (listener != null) {
+                                List<String> data = uploadResultBean.getData();
+                                if (data == null) {
+                                    data = new ArrayList<>();
+                                }
+                                listener.onSuccess(data);
+                            }
+                        } else {
+                            onError(status, message, listener);
                         }
-                        if (listener != null) {
-                            listener.onSuccess(imageUrls);
-                        }
-                    } else {
-                        onError(status, message, listener);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        onError(-1, "", listener);
                     }
                 } else {
                     onError(response.code(), "", listener);
