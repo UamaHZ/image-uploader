@@ -4,6 +4,7 @@ import com.uama.retrofit.converter.gson.LMGsonConverterFactory;
 
 import java.io.File;
 import java.io.InputStream;
+import java.net.URI;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +61,7 @@ public class LMImageUploader {
 
         OkHttpClient client = clientBuilder.build();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(uploadUrl)
+                .baseUrl(URI.create(uploadUrl).getHost())
                 .client(client)
                 .addConverterFactory(LMGsonConverterFactory.create(BaseBean.class))
                 .build();
