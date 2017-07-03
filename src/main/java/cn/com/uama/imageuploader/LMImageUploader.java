@@ -60,7 +60,7 @@ public class LMImageUploader {
 
         OkHttpClient client = clientBuilder.build();
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("")
+                .baseUrl(uploadUrl)
                 .client(client)
                 .addConverterFactory(LMGsonConverterFactory.create(BaseBean.class))
                 .build();
