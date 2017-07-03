@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by liwei on 2017/7/3 15:02
  * Email: liwei@uama.com.cn
- * Description: 上传结果实体类
+ * Description: upload result entity class
  */
 public class UploadResultBean extends BaseBean {
     private List<String> data;
