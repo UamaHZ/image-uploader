@@ -1,7 +1,11 @@
 package cn.com.uama.imageuploader;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
@@ -54,8 +58,20 @@ public class LMImageUploader {
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     ResponseBody body = response.body();
-                    if (listener != null) {
-                        listener.onSuccess(body.string());
+                    JSONObject jsonObject = new JSONObject(body.string());
+                    int status = jsonObject.getInt("status");
+                    String message = jsonObject.getString("msg");
+                    if (status == 100) {
+                        JSONArray data = jsonObject.getJSONArray("data");
+                        List<String> imageUrls = new ArrayList<>();
+                        for (Object o : data) {
+                            imageUrls.add((String) o);
+                        }
+                        if (listener != null) {
+                            listener.onSuccess(imageUrls);
+                        }
+                    } else {
+                        onError(status, message, listener);
                     }
                 } else {
                     onError(response.code(), "", listener);
