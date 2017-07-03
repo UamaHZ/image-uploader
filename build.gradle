@@ -2,8 +2,8 @@ apply plugin: 'java'
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.squareup.okhttp3:okhttp:3.8.1'
-    compile 'com.google.code.gson:gson:2.8.1'
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.github.UamaHZ:retrofit-gson-converter:0.1'
 }
 
 sourceCompatibility = "1.7"

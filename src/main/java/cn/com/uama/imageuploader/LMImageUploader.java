@@ -1,44 +1,42 @@
 package cn.com.uama.imageuploader;
 
-import com.google.gson.Gson;
+import com.uama.retrofit.converter.gson.LMGsonConverterFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
+import retrofit2.Retrofit;
 
 public class LMImageUploader {
 
-    private static OkHttpClient client;
-    private static String uploadUrl;
-    private static Gson gson;
+    private static Api api;
 
     /**
      * 根据配置类进行初始化操作
      */
     public static void init(Config config) {
-        if (client != null) return;
+        if (api != null) return;
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
         if (config != null) {
             for (Interceptor interceptor : config.interceptors()) {
                 clientBuilder.addInterceptor(interceptor);
             }
         }
-        client = clientBuilder.build();
-        gson = new Gson();
         // TODO: 2017/7/3 url 会随环境变化
-        uploadUrl = "http://121.40.102.80:7888/upload";
+        String uploadBaseUrl = "http://121.40.102.80:7888/";
+        OkHttpClient client = clientBuilder.build();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(uploadBaseUrl)
+                .client(client)
+                .addConverterFactory(LMGsonConverterFactory.create(BaseBean.class))
+                .build();
+        api = retrofit.create(Api.class);
     }
 
     /**
@@ -48,33 +46,22 @@ public class LMImageUploader {
      * @param listener 回调接口
      */
     public static void upload(List<String> pathList, String type, final UploadListener listener) {
-        if (client == null) {
+        if (api == null) {
             throw new IllegalStateException("LMImageUploader not initialized, call LMImageUploader.init(Config config) in your custom application class first!");
         }
-        MultipartBody.Builder requestBodyBuilder = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("type", type);
+        List<MultipartBody.Part> partList = new ArrayList<>();
+        partList.add(MultipartBody.Part.createFormData("type", type));
         for (String path : pathList) {
             File file = new File(path);
-            requestBodyBuilder.addFormDataPart("files", file.getName(),
-                    RequestBody.create(MediaType.parse("image/png"), file));
+            partList.add(MultipartBody.Part.createFormData("files", file.getName(),
+                    RequestBody.create(MediaType.parse("image/png"), file)));
         }
-        Request request = new Request.Builder()
-                .url(uploadUrl)
-                .post(requestBodyBuilder.build())
-                .build();
-        client.newCall(request).enqueue(new Callback() {
+        api.upload(partList).enqueue(new retrofit2.Callback<UploadResultBean>() {
             @Override
-            public void onFailure(Call call, IOException e) {
-                onError(-1, "", listener);
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(retrofit2.Call<UploadResultBean> call, retrofit2.Response<UploadResultBean> response) {
                 if (response.isSuccessful()) {
                     try {
-                        ResponseBody body = response.body();
-                        UploadResultBean uploadResultBean = gson.fromJson(body.charStream(), UploadResultBean.class);
+                        UploadResultBean uploadResultBean = response.body();
                         int status = uploadResultBean.getStatus();
                         String message = uploadResultBean.getMsg();
                         if (status == 100) {
@@ -95,6 +82,11 @@ public class LMImageUploader {
                 } else {
                     onError(response.code(), "", listener);
                 }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<UploadResultBean> call, Throwable t) {
+                onError(-1, "", listener);
             }
         });
     }

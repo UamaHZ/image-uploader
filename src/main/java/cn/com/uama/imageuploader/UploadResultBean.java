@@ -7,26 +7,8 @@ import java.util.List;
  * Email: liwei@uama.com.cn
  * Description: 上传结果实体类
  */
-public class UploadResultBean {
-    private int status;
-    private String msg;
+public class UploadResultBean extends BaseBean {
     private List<String> data;
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public String getMsg() {
-        return msg;
-    }
-
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
 
     public List<String> getData() {
         return data;
