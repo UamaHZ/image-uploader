@@ -37,6 +37,7 @@ public class LMImageUploader {
         }
         client = clientBuilder.build();
         gson = new Gson();
+        // TODO: 2017/7/3 url 会随环境变化
         uploadUrl = "http://121.40.102.80:7888/upload";
     }
 
@@ -48,7 +49,7 @@ public class LMImageUploader {
      */
     public static void upload(List<String> pathList, String type, final UploadListener listener) {
         if (client == null) {
-            throw new IllegalStateException("not initialized, call LMImageUploader.init(Config config) first!");
+            throw new IllegalStateException("LMImageUploader not initialized, call LMImageUploader.init(Config config) in your custom application class first!");
         }
         MultipartBody.Builder requestBodyBuilder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
