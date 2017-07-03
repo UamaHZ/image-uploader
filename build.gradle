@@ -6,5 +6,9 @@ dependencies {
     compile 'com.github.UamaHZ:retrofit-gson-converter:0.1'
 }
 
+repositories {
+    maven { url "https://jitpack.io" }
+}
+
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
