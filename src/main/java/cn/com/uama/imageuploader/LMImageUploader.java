@@ -1,5 +1,6 @@
 package cn.com.uama.imageuploader;
 
+import com.google.gson.Gson;
 import com.uama.retrofit.converter.gson.LMGsonConverterFactory;
 
 import java.io.File;
@@ -27,6 +28,7 @@ public class LMImageUploader {
 
     private static Api api;
     private static String uploadUrl;
+    private static Gson gson;
 
     /**
      * 根据配置类进行初始化操作
@@ -65,6 +67,7 @@ public class LMImageUploader {
                 .addConverterFactory(LMGsonConverterFactory.create(BaseBean.class))
                 .build();
         api = retrofit.create(Api.class);
+        gson = new Gson();
     }
 
     /**
@@ -99,7 +102,7 @@ public class LMImageUploader {
                                 if (data == null) {
                                     data = new ArrayList<>();
                                 }
-                                listener.onSuccess(data);
+                                listener.onSuccess(gson.toJson(data));
                             }
                         } else {
                             onError(status, message, listener);
