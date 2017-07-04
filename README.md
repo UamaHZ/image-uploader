@@ -54,7 +54,7 @@ LMImageUploader.init(new Config() {
 public static void upload(List<String> pathList, String type, final UploadListener listener)
 ```
 其中，`type` 取值为 [UploadType](https://github.com/UamaHZ/image-uploader/blob/master/src/main/java/cn/com/uama/imageuploader/UploadType.java) 中的常量，
-目前只定义了 `UploadType.NEIGHBOUR` 一种用作测试。上传成功会得到上传图片在服务器上的 urls ，拿到之后作为表单的 `imageUrls` 参数的值进行传递就可以了。
+目前只定义了 `UploadType.NEIGHBOUR` 一种用作测试，后面需要根据不同的模块传不同的值（后端还在整理中）。上传成功会得到上传图片在服务器上的 urls ，拿到之后作为表单的 `imageUrls` 参数的值进行传递就可以了。
 
 **调用示例：**
 ```
