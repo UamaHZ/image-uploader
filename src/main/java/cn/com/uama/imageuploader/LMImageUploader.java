@@ -39,8 +39,11 @@ public class LMImageUploader {
         if (config != null) {
             uploadUrl = config.uploadUrl();
 
-            for (Interceptor interceptor : config.interceptors()) {
-                clientBuilder.addInterceptor(interceptor);
+            List<Interceptor> interceptors = config.interceptors();
+            if (interceptors != null) {
+                for (Interceptor interceptor : interceptors) {
+                    clientBuilder.addInterceptor(interceptor);
+                }
             }
 
             InputStream inputStream = config.trustedCertificatesInputStream();
