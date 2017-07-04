@@ -1,4 +1,6 @@
 # Image Uploader
+[![](https://jitpack.io/v/UamaHZ/image-uploader.svg)](https://jitpack.io/#UamaHZ/image-uploader)
+
 项目中统一的图片上传功能组件。
 
 ## 添加依赖
