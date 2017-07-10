@@ -76,18 +76,17 @@ public class LMImageUploader {
     /**
      * 上传图片
      *
-     * @param pathList 待上传的图片路径列表
+     * @param fileList 待上传的图片文件列表
      * @param type     类型
      * @param listener 回调接口
      */
-    public static void upload(List<String> pathList, String type, final UploadListener listener) {
+    public static void uploadFiles(List<File> fileList, String type, final UploadListener listener) {
         if (api == null) {
             throw new IllegalStateException("LMImageUploader not initialized, call LMImageUploader.init(Config config) in your custom application class first!");
         }
         List<MultipartBody.Part> partList = new ArrayList<>();
         partList.add(MultipartBody.Part.createFormData("type", type));
-        for (String path : pathList) {
-            File file = new File(path);
+        for (File file : fileList) {
             partList.add(MultipartBody.Part.createFormData("files", file.getName(),
                     RequestBody.create(MediaType.parse("image/png"), file)));
         }
@@ -124,6 +123,22 @@ public class LMImageUploader {
                 onError(-1, "", listener);
             }
         });
+    }
+
+    /**
+     * 上传图片
+     *
+     * @param pathList 待上传的图片路径列表
+     * @param type     类型
+     * @param listener 回调接口
+     */
+    public static void upload(List<String> pathList, String type, final UploadListener listener) {
+        List<File> fileList = new ArrayList<>();
+        for (String path : pathList) {
+            File file = new File(path);
+            fileList.add(file);
+        }
+        uploadFiles(fileList, type, listener);
     }
 
     private static void onError(int errorCode, String errorMessage, UploadListener listener) {
