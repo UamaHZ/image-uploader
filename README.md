@@ -39,7 +39,21 @@ LMImageUploader.init(new Config() {
         // 这里配置 HTTPS 证书（如果需要的话）
         return null;
     }
-});
+}, BuildConfig.DEBUG);
+```
+如果不需要全部配置，可以选择使用 `SimpleConfig`
+```
+LMImageUploader.init(new SimpleConfig() {
+    @Override
+    public String uploadUrl() {
+        // 这里配置上传图片接口路径（一定要配）
+        return "http://121.40.102.80:7888/upload";
+    }
+}, BuildConfig.DEBUG);
+```
+如果不需要配置，调用
+```
+LMImageUploader.init(BuildConfig.DEBUG);
 ```
 
 **然后**，在需要的地方调用上传图片方法
@@ -52,6 +66,17 @@ LMImageUploader.init(new Config() {
  * @param listener 回调接口
  */
 public static void upload(List<String> pathList, String type, final UploadListener listener)
+```
+或
+```
+/**
+ * 上传图片
+ *
+ * @param fileList 待上传的图片文件列表
+ * @param type     类型
+ * @param listener 回调接口
+ */
+public static void uploadFiles(List<File> fileList, String type, final UploadListener listener)
 ```
 其中，`type` 取值为 [UploadType](https://github.com/UamaHZ/image-uploader/blob/master/src/main/java/cn/com/uama/imageuploader/UploadType.java) 中的常量，
 目前只定义了 `UploadType.NEIGHBOUR` 一种用作测试，后面需要根据不同的模块传不同的值（后端还在整理中）。上传成功会得到上传图片在服务器上的 urls ，拿到之后作为表单的 `imageUrls` 参数的值进行传递就可以了。
