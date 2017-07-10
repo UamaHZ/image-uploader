@@ -32,8 +32,11 @@ public class LMImageUploader {
 
     /**
      * 根据配置类进行初始化操作
+     *
+     * @param config 配置信息
+     * @param debug  是否是 debug 模式
      */
-    public static void init(Config config) {
+    public static void init(Config config, boolean debug) {
         if (api != null) return;
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
         if (config != null) {
@@ -63,6 +66,11 @@ public class LMImageUploader {
             }
         }
 
+        // 如果没有配置上传接口，使用默认接口
+        if (uploadUrl == null || uploadUrl.trim().equals("")) {
+            uploadUrl = getDefaultUploadUrl(debug);
+        }
+
         OkHttpClient client = clientBuilder.build();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(uploadUrl.endsWith(File.separator) ? uploadUrl : uploadUrl + File.separator)
@@ -71,6 +79,20 @@ public class LMImageUploader {
                 .build();
         api = retrofit.create(Api.class);
         gson = new Gson();
+    }
+
+    /**
+     * 获取默认上传接口
+     *
+     * @param debug 是否是 debug 模式
+     * @return 如果 debug 为 true ，返回开放环境和测试环境下的上传接口，否则返回正式环境的上传接口
+     */
+    private static String getDefaultUploadUrl(boolean debug) {
+        if (debug) {
+            return "http://121.40.102.80:7888/upload";
+        }
+        // TODO: 2017/7/10 还没有正式环境的接口地址
+        return "http://121.40.102.80:7888/upload";
     }
 
     /**
