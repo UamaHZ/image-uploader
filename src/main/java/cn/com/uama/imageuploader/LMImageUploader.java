@@ -31,6 +31,15 @@ public class LMImageUploader {
     private static Gson gson;
 
     /**
+     * 初始化（没有配置）
+     *
+     * @param debug 是否是 debug 模式
+     */
+    public static void init(boolean debug) {
+        init(null, debug);
+    }
+
+    /**
      * 根据配置类进行初始化操作
      *
      * @param config 配置信息
