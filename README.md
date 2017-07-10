@@ -30,8 +30,8 @@ LMImageUploader.init(new Config() {
 
     @Override
     public String uploadUrl() {
-        // 这里配置上传图片接口路径（一定要配）
-        return "http://121.40.102.80:7888/upload";
+        // 这里配置上传图片接口路径，不配会使用默认接口
+        return "http://121.40.102.80:7888/upload";
     }
 
     @Override
@@ -46,8 +46,8 @@ LMImageUploader.init(new Config() {
 LMImageUploader.init(new SimpleConfig() {
     @Override
     public String uploadUrl() {
-        // 这里配置上传图片接口路径（一定要配）
-        return "http://121.40.102.80:7888/upload";
+        // 这里配置上传图片接口路径，不配会使用默认接口
+        return "http://121.40.102.80:7888/upload";
     }
 }, BuildConfig.DEBUG);
 ```
