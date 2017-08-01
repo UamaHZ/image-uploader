@@ -7,5 +7,9 @@ package cn.com.uama.imageuploader;
  */
 public final class UploadType {
     private UploadType() {}
-    public static final String NEIGHBOUR = "nei";       // 邻里
+    public static final String NEIGHBOUR = "nei";           // 邻里相关
+    public static final String HEAD = "head";               // 头像相关
+    public static final String ORDER = "order";             // 订单相关
+    public static final String DECORATION = "decoration";   // 装修相关
+    public static final String DEVICE = "device";           // 设备相关
 }
