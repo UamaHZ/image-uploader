@@ -12,4 +12,6 @@ public final class UploadType {
     public static final String ORDER = "order";             // 订单相关
     public static final String DECORATION = "decoration";   // 装修相关
     public static final String DEVICE = "device";           // 设备相关
+    public static final String COMMUNITY = "community";     // 园区相关
+    public static final String USER = "user";               // 用户相关
 }
