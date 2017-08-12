@@ -1,5 +1,8 @@
 # Change Log
 
+## Version 1.0.0 *(2017-08-12)*
+[UploadType](https://github.com/UamaHZ/image-uploader/blob/master/src/main/java/cn/com/uama/imageuploader/UploadType.java) 增加 `COMMUNITY`,`USER` 两种类型。
+
 ## Version 0.0.3 *(2017-08-01)*
 [UploadType](https://github.com/UamaHZ/image-uploader/blob/master/src/main/java/cn/com/uama/imageuploader/UploadType.java) 增加 `HEAD`,`ORDER`,`DECORATION`,`DEVICE` 几种类型。
 
