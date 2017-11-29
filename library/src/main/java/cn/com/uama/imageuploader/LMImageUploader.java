@@ -1,5 +1,7 @@
 package cn.com.uama.imageuploader;
 
+import android.content.Context;
+
 import com.google.gson.Gson;
 import com.uama.retrofit.converter.gson.LMGsonConverterFactory;
 
@@ -23,6 +25,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import uama.com.image.compress.ImageCompressFactory;
 
 public class LMImageUploader {
 
@@ -168,6 +171,22 @@ public class LMImageUploader {
         for (String path : pathList) {
             File file = new File(path);
             fileList.add(file);
+        }
+        uploadFiles(fileList, type, listener);
+    }
+
+    /**
+     * 将图片压缩之后再进行上传
+     * @param context   Context 对象
+     * @param pathList  待上传的图片路径列表
+     * @param type      类型
+     * @param listener  回调接口
+     */
+    public static void compressAndUpload(Context context, List<String> pathList,
+                                         String type, UploadListener listener) {
+        List<File> fileList = new ArrayList<>();
+        for (String path : pathList) {
+            fileList.add(ImageCompressFactory.getNewFile(context, path));
         }
         uploadFiles(fileList, type, listener);
     }
