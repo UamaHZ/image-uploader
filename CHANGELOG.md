@@ -1,5 +1,8 @@
 # Change Log
 
+## Version 1.1.0 *(2017-11-29)*
+`LMImageUploader` 新增压缩后再上传方法: [LMImageUploader#compressAndUpload](https://github.com/UamaHZ/image-uploader/blob/4d26d9ca6defb50da63c54d084290651e7749c19/library/src/main/java/cn/com/uama/imageuploader/LMImageUploader.java#L185) 。
+
 ## Version 1.0.0 *(2017-08-12)*
 [UploadType](https://github.com/UamaHZ/image-uploader/blob/master/src/main/java/cn/com/uama/imageuploader/UploadType.java) 增加 `COMMUNITY`,`USER` 两种类型。
 

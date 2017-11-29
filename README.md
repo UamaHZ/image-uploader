@@ -78,6 +78,18 @@ public static void upload(List<String> pathList, String type, final UploadListen
  */
 public static void uploadFiles(List<File> fileList, String type, final UploadListener listener)
 ```
+或
+```
+/**
+ * 将图片压缩之后再进行上传
+ * @param context   Context 对象
+ * @param pathList  待上传的图片路径列表
+ * @param type      类型
+ * @param listener  回调接口
+ */
+public static void compressAndUpload(Context context, List<String> pathList,
+                                     String type, UploadListener listener)
+```
 其中，`type` 取值为 [UploadType](https://github.com/UamaHZ/image-uploader/blob/master/src/main/java/cn/com/uama/imageuploader/UploadType.java) 中的常量，根据不同的接口要求传不同的值。上传成功会得到上传图片在服务器上的 urls ，拿到之后作为表单的 `imageUrls` 参数的值进行传递就可以了。
 
 **调用示例：**
