@@ -17,6 +17,7 @@ allprojects {
 ```
 compile 'com.github.UamaHZ:image-uploader:{version}'
 ```
+{version} 参见顶部的 badge 。
 
 ## 用法
 **首先**，在项目的 `application` 中调用初始化方法
@@ -30,7 +31,7 @@ LMImageUploader.init(new Config() {
 
     @Override
     public String uploadUrl() {
-        // 这里配置上传图片接口路径，不配会使用默认接口
+        // 这里配置上传图片接口路径，必须进行配置
         return "http://121.40.102.80:7888/upload";
     }
 
@@ -39,22 +40,9 @@ LMImageUploader.init(new Config() {
         // 这里配置 HTTPS 证书（如果需要的话）
         return null;
     }
-}, BuildConfig.DEBUG);
+});
 ```
-如果不需要全部配置，可以选择使用 `SimpleConfig`
-```
-LMImageUploader.init(new SimpleConfig() {
-    @Override
-    public String uploadUrl() {
-        // 这里配置上传图片接口路径，不配会使用默认接口
-        return "http://121.40.102.80:7888/upload";
-    }
-}, BuildConfig.DEBUG);
-```
-如果不需要配置，调用
-```
-LMImageUploader.init(BuildConfig.DEBUG);
-```
+**必须配置图片上传接口路径**，如果不需要全部配置，可以选择使用 `SimpleConfig` 。
 
 **然后**，在需要的地方调用上传图片方法
 ```
