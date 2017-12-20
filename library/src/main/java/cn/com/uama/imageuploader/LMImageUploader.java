@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
@@ -66,13 +67,19 @@ public class LMImageUploader {
         if (config == null) {
             throw new IllegalArgumentException("Config must not be null, because upload url must be provided.");
         }
-        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
 
         uploadUrl = config.uploadUrl();
         if (uploadUrl == null) {
             throw new IllegalArgumentException("Upload url must be provided.");
         }
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
 
+        // 设置超时时间
+        clientBuilder.connectTimeout(60, TimeUnit.SECONDS);
+        clientBuilder.readTimeout(60, TimeUnit.SECONDS);
+        clientBuilder.writeTimeout(60, TimeUnit.SECONDS);
+
+        // 设置拦截器
         List<Interceptor> interceptors = config.interceptors();
         if (interceptors != null) {
             for (Interceptor interceptor : interceptors) {
@@ -80,6 +87,7 @@ public class LMImageUploader {
             }
         }
 
+        // 设置 https 证书
         InputStream inputStream = config.trustedCertificatesInputStream();
         if (inputStream != null) {
             // 配置 https 证书
