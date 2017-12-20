@@ -27,7 +27,7 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha9'
     testCompile 'junit:junit:4.12'
 
-    implementation 'com.github.UamaHZ:image-uploader:4d26d9c'
+    implementation 'com.github.UamaHZ:image-uploader:1.1.0'
 }
 
 repositories {

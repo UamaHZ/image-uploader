@@ -37,7 +37,9 @@ public class LMImageUploader {
      * 初始化（没有配置）
      *
      * @param debug 是否是 debug 模式
+     * @deprecated 使用 {@link #init(Config)} 代替
      */
+    @Deprecated
     public static void init(boolean debug) {
         init(null, debug);
     }
@@ -47,40 +49,51 @@ public class LMImageUploader {
      *
      * @param config 配置信息
      * @param debug  是否是 debug 模式
+     * @deprecated 使用 {@link #init(Config)} 代替
      */
+    @Deprecated
     public static void init(Config config, boolean debug) {
+        init(config);
+    }
+
+    /**
+     * 根据配置类进行初始化操作
+     *
+     * @param config 配置信息，不能为 null
+     */
+    public static void init(Config config) {
         if (api != null) return;
+        if (config == null) {
+            throw new IllegalArgumentException("Config must not be null, because upload url must be provided.");
+        }
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
-        if (config != null) {
-            uploadUrl = config.uploadUrl();
 
-            List<Interceptor> interceptors = config.interceptors();
-            if (interceptors != null) {
-                for (Interceptor interceptor : interceptors) {
-                    clientBuilder.addInterceptor(interceptor);
-                }
-            }
+        uploadUrl = config.uploadUrl();
+        if (uploadUrl == null) {
+            throw new IllegalArgumentException("Upload url must be provided.");
+        }
 
-            InputStream inputStream = config.trustedCertificatesInputStream();
-            if (inputStream != null) {
-                // 配置 https 证书
-                X509TrustManager trustManager;
-                SSLSocketFactory sslSocketFactory;
-                try {
-                    trustManager = HttpsHelper.trustManagerForCertificates(inputStream);
-                    SSLContext sslContext = SSLContext.getInstance("TLS");
-                    sslContext.init(null, new TrustManager[]{trustManager}, null);
-                    sslSocketFactory = sslContext.getSocketFactory();
-                } catch (GeneralSecurityException e) {
-                    throw new RuntimeException(e);
-                }
-                clientBuilder.sslSocketFactory(sslSocketFactory, trustManager);
+        List<Interceptor> interceptors = config.interceptors();
+        if (interceptors != null) {
+            for (Interceptor interceptor : interceptors) {
+                clientBuilder.addInterceptor(interceptor);
             }
         }
 
-        // 如果没有配置上传接口，使用默认接口
-        if (uploadUrl == null || uploadUrl.trim().equals("")) {
-            uploadUrl = getDefaultUploadUrl(debug);
+        InputStream inputStream = config.trustedCertificatesInputStream();
+        if (inputStream != null) {
+            // 配置 https 证书
+            X509TrustManager trustManager;
+            SSLSocketFactory sslSocketFactory;
+            try {
+                trustManager = HttpsHelper.trustManagerForCertificates(inputStream);
+                SSLContext sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(null, new TrustManager[]{trustManager}, null);
+                sslSocketFactory = sslContext.getSocketFactory();
+            } catch (GeneralSecurityException e) {
+                throw new RuntimeException(e);
+            }
+            clientBuilder.sslSocketFactory(sslSocketFactory, trustManager);
         }
 
         OkHttpClient client = clientBuilder.build();
@@ -91,20 +104,6 @@ public class LMImageUploader {
                 .build();
         api = retrofit.create(Api.class);
         gson = new Gson();
-    }
-
-    /**
-     * 获取默认上传接口
-     *
-     * @param debug 是否是 debug 模式
-     * @return 如果 debug 为 true ，返回开放环境和测试环境下的上传接口，否则返回正式环境的上传接口
-     */
-    private static String getDefaultUploadUrl(boolean debug) {
-        if (debug) {
-            return "http://121.40.102.80:7888/upload";
-        }
-        // TODO: 2017/7/10 还没有正式环境的接口地址
-        return "http://121.40.102.80:7888/upload";
     }
 
     /**
