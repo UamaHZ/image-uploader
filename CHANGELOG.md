@@ -1,5 +1,8 @@
 # Change Log
 
+## Version 1.2.1 *(2018-12-19)*
+[UploadType](https://github.com/UamaHZ/image-uploader/blob/master/library/src/main/java/cn/com/uama/imageuploader/UploadType.java) 增加 `SCHOOL` 类型。
+
 ## Version 1.2.0 *(2017-12-20)*
 * 废弃之前的初始化方法，新增 `LMImageUploader#init(Config config)` ，内部不再提供默认上传路径，必须从外部设置
 * 设置接口超时时间（包括连接/读取/写入）为 60 秒
@@ -8,10 +11,10 @@
 `LMImageUploader` 新增压缩后再上传方法: [LMImageUploader#compressAndUpload](https://github.com/UamaHZ/image-uploader/blob/4d26d9ca6defb50da63c54d084290651e7749c19/library/src/main/java/cn/com/uama/imageuploader/LMImageUploader.java#L185) 。
 
 ## Version 1.0.0 *(2017-08-12)*
-[UploadType](https://github.com/UamaHZ/image-uploader/blob/master/src/main/java/cn/com/uama/imageuploader/UploadType.java) 增加 `COMMUNITY`,`USER` 两种类型。
+[UploadType](https://github.com/UamaHZ/image-uploader/blob/master/library/src/main/java/cn/com/uama/imageuploader/UploadType.java) 增加 `COMMUNITY`,`USER` 两种类型。
 
 ## Version 0.0.3 *(2017-08-01)*
-[UploadType](https://github.com/UamaHZ/image-uploader/blob/master/src/main/java/cn/com/uama/imageuploader/UploadType.java) 增加 `HEAD`,`ORDER`,`DECORATION`,`DEVICE` 几种类型。
+[UploadType](https://github.com/UamaHZ/image-uploader/blob/master/library/src/main/java/cn/com/uama/imageuploader/UploadType.java) 增加 `HEAD`,`ORDER`,`DECORATION`,`DEVICE` 几种类型。
 
 ## Version 0.0.2 *(2017-07-10)*
 * LMImageUploader 增加 uploadFiles 方法。
