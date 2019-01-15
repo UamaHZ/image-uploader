@@ -17,6 +17,8 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import io.reactivex.Observable;
+import io.reactivex.functions.Function;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -184,10 +186,11 @@ public class LMImageUploader {
 
     /**
      * 将图片压缩之后再进行上传
-     * @param context   Context 对象
-     * @param pathList  待上传的图片路径列表
-     * @param type      类型
-     * @param listener  回调接口
+     *
+     * @param context  Context 对象
+     * @param pathList 待上传的图片路径列表
+     * @param type     类型
+     * @param listener 回调接口
      */
     public static void compressAndUpload(Context context, List<String> pathList,
                                          String type, UploadListener listener) {
@@ -202,5 +205,89 @@ public class LMImageUploader {
         if (listener != null) {
             listener.onError(String.valueOf(errorCode), errorMessage);
         }
+    }
+
+    /**
+     * 获取上传图片的 Observable 对象
+     *
+     * @param fileList 待上传的图片文件列表
+     * @param type     类型
+     */
+    public static Observable<String> uploadFilesObservable(List<File> fileList, String type) {
+        return api.uploadObservable(uploadUrl, createPartList(fileList, type))
+                .map(new UploadMapFunction());
+    }
+
+    /**
+     * 获取上传图片的 Observable 对象
+     *
+     * @param pathList 待上传的图片路径列表
+     * @param type     类型
+     */
+    public static Observable<String> uploadObservable(List<String> pathList, String type) {
+        return api.uploadObservable(uploadUrl, createPartList(createFileList(null, pathList, false), type))
+                .map(new UploadMapFunction());
+    }
+
+    /**
+     * 获取压缩图片并上传的 Observable 对象
+     *
+     * @param context  Context 对象
+     * @param pathList 待上传的图片路径列表
+     * @param type     类型
+     */
+    public static Observable<String> compressAndUploadObservable(Context context, List<String> pathList, String type) {
+        return api.uploadObservable(uploadUrl, createPartList(createFileList(context, pathList, true), type))
+                .map(new UploadMapFunction());
+    }
+
+    private static class UploadMapFunction implements Function<UploadResultBean, String> {
+        @Override
+        public String apply(UploadResultBean uploadResultBean) throws Exception {
+            int status = uploadResultBean.getStatus();
+            if (status != 100) {
+                // 接口报错
+                String msg = uploadResultBean.getMsg();
+                throw new UploadException(msg);
+            }
+            List<String> data = uploadResultBean.getData();
+            if (data == null) data = new ArrayList<>();
+            return gson.toJson(data);
+        }
+    }
+
+    /**
+     * 根据图片路径创建文件列表
+     *
+     * @param context  Context 对象
+     * @param pathList 图片路径列表
+     * @param compress 是否压缩
+     */
+    private static List<File> createFileList(Context context, List<String> pathList, boolean compress) {
+        List<File> fileList = new ArrayList<>();
+        for (String path : pathList) {
+            if (compress) {
+                fileList.add(ImageCompressFactory.getNewFile(context, path));
+            } else {
+                fileList.add(new File(path));
+            }
+        }
+        return fileList;
+    }
+
+    /**
+     * 根据图片和 type 创建 part 列表
+     *
+     * @param fileList 带上传的图片文件列表
+     * @param type     类型
+     */
+    private static List<MultipartBody.Part> createPartList(List<File> fileList, String type) {
+        List<MultipartBody.Part> partList = new ArrayList<>();
+        partList.add(MultipartBody.Part.createFormData("type", type));
+        for (File file : fileList) {
+            partList.add(MultipartBody.Part.createFormData("files", file.getName(),
+                    RequestBody.create(MediaType.parse("image/png"), file)));
+        }
+        return partList;
     }
 }

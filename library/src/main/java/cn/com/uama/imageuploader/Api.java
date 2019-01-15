@@ -2,6 +2,7 @@ package cn.com.uama.imageuploader;
 
 import java.util.List;
 
+import io.reactivex.Observable;
 import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Multipart;
@@ -13,4 +14,8 @@ public interface Api {
     @Multipart
     @POST
     Call<UploadResultBean> upload(@Url String uploadUrl, @Part List<MultipartBody.Part> partList);
+
+    @Multipart
+    @POST
+    Observable<UploadResultBean> uploadObservable(@Url String uploadUrl, @Part List<MultipartBody.Part> partList);
 }
