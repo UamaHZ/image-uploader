@@ -218,8 +218,7 @@ public class LMImageUploader {
      */
     public static Observable<String> uploadFilesObservable(List<File> fileList, String type) {
         if (fileList == null || fileList.isEmpty()) return Observable.just("");
-        return api.uploadObservable(uploadUrl, createPartList(fileList, type))
-                .map(new UploadMapFunction());
+        return uploadPartList(createPartList(fileList, type));
     }
 
     /**
@@ -230,8 +229,7 @@ public class LMImageUploader {
      */
     public static Observable<String> uploadObservable(List<String> pathList, String type) {
         if (pathList == null || pathList.isEmpty()) return Observable.just("");
-        return api.uploadObservable(uploadUrl, createPartList(createFileList(null, pathList, false), type))
-                .map(new UploadMapFunction());
+        return uploadPartList(createPartList(createFileList(null, pathList, false), type));
     }
 
     /**
@@ -243,7 +241,12 @@ public class LMImageUploader {
      */
     public static Observable<String> compressAndUploadObservable(Context context, List<String> pathList, String type) {
         if (pathList == null || pathList.isEmpty()) return Observable.just("");
-        return api.uploadObservable(uploadUrl, createPartList(createFileList(context, pathList, true), type))
+        return uploadPartList(createPartList(createFileList(context, pathList, true), type));
+    }
+
+    private static Observable<String> uploadPartList(List<MultipartBody.Part> partList) {
+        if (partList == null || partList.isEmpty()) return Observable.just("");
+        return api.uploadObservable(uploadUrl, partList)
                 .map(new UploadMapFunction());
     }
 
