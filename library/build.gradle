@@ -30,6 +30,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
     implementation 'com.github.UamaHZ:retrofit-gson-converter:0.1'
     api 'com.uama.utils:image-compress:1.0.4'
 }

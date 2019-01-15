@@ -19,6 +19,7 @@ import javax.net.ssl.X509TrustManager;
 
 import io.reactivex.Observable;
 import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -28,6 +29,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import uama.com.image.compress.ImageCompressFactory;
 
 public class LMImageUploader {
@@ -111,6 +113,7 @@ public class LMImageUploader {
                 .baseUrl(uploadUrl.endsWith(File.separator) ? uploadUrl : uploadUrl + File.separator)
                 .client(client)
                 .addConverterFactory(LMGsonConverterFactory.create(BaseBean.class))
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
                 .build();
         api = retrofit.create(Api.class);
         gson = new Gson();
