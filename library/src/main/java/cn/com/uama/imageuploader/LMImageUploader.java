@@ -7,6 +7,8 @@ import com.uama.retrofit.converter.gson.LMGsonConverterFactory;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,7 @@ import javax.net.ssl.X509TrustManager;
 import io.reactivex.Observable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -290,8 +293,12 @@ public class LMImageUploader {
         List<MultipartBody.Part> partList = new ArrayList<>();
         partList.add(MultipartBody.Part.createFormData("type", type));
         for (File file : fileList) {
-            partList.add(MultipartBody.Part.createFormData("files", ByteString.encodeUtf8(file.getName()).utf8(),
-                    RequestBody.create(MediaType.parse("image/png"), file)));
+            try {
+                partList.add(MultipartBody.Part.createFormData("files", URLEncoder.encode(file.getName(), "UTF-8"),
+                        RequestBody.create(MediaType.parse("image/png"), file)));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
         return partList;
     }
