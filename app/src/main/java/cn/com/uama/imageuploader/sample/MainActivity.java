@@ -1,9 +1,14 @@
-package cn.com.uama.imageuploader;
+package cn.com.uama.imageuploader.sample;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import java.util.Collections;
+
+import cn.com.uama.imageuploader.LMImageUploader;
+import cn.com.uama.imageuploader.SimpleConfig;
+import cn.com.uama.imageuploader.UploadListener;
+import cn.com.uama.imageuploader.UploadType;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -12,6 +17,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        LMImageUploader.init(new SimpleConfig() {
+            @Override
+            public String uploadUrl() {
+                return "";
+            }
+        });
         LMImageUploader.compressAndUpload(this, Collections.<String>emptyList(),
                 UploadType.COMMUNITY,
                 new UploadListener() {
