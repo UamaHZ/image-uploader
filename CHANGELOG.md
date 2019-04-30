@@ -1,5 +1,8 @@
 # Change Log
 
+## Version 1.2.2 *(2019-04-30)*
+对文件名称进行 URL 编码，解决 Okhttp 版本为 3.12.* 时如果文件名称含有中文会崩溃的问题。
+
 ## Version 1.2.1 *(2018-12-19)*
 [UploadType](https://github.com/UamaHZ/image-uploader/blob/master/library/src/main/java/cn/com/uama/imageuploader/UploadType.java) 增加 `SCHOOL` 类型。
 
