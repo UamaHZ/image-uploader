@@ -25,6 +25,7 @@ import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
+import okio.ByteString;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -130,12 +131,7 @@ public class LMImageUploader {
         if (api == null) {
             throw new IllegalStateException("LMImageUploader not initialized, call LMImageUploader.init(Config config) in your custom application class first!");
         }
-        List<MultipartBody.Part> partList = new ArrayList<>();
-        partList.add(MultipartBody.Part.createFormData("type", type));
-        for (File file : fileList) {
-            partList.add(MultipartBody.Part.createFormData("files", file.getName(),
-                    RequestBody.create(MediaType.parse("image/png"), file)));
-        }
+        List<MultipartBody.Part> partList = createPartList(fileList, type);
         api.upload(uploadUrl, partList).enqueue(new Callback<UploadResultBean>() {
             @Override
             public void onResponse(Call<UploadResultBean> call, Response<UploadResultBean> response) {
@@ -294,7 +290,7 @@ public class LMImageUploader {
         List<MultipartBody.Part> partList = new ArrayList<>();
         partList.add(MultipartBody.Part.createFormData("type", type));
         for (File file : fileList) {
-            partList.add(MultipartBody.Part.createFormData("files", file.getName(),
+            partList.add(MultipartBody.Part.createFormData("files", ByteString.encodeUtf8(file.getName()).utf8(),
                     RequestBody.create(MediaType.parse("image/png"), file)));
         }
         return partList;
