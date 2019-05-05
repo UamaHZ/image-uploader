@@ -22,13 +22,11 @@ import javax.net.ssl.X509TrustManager;
 import io.reactivex.Observable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
-import okio.ByteString;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -124,18 +122,19 @@ public class LMImageUploader {
     }
 
     /**
-     * 上传图片
+     * 上传图片到指定地址
      *
-     * @param fileList 待上传的图片文件列表
-     * @param type     类型
-     * @param listener 回调接口
+     * @param uploadUrl 上传地址
+     * @param fileList  待上传的图片文件列表
+     * @param type      类型
+     * @param listener  回调接口
      */
-    public static void uploadFiles(List<File> fileList, String type, final UploadListener listener) {
+    public static void uploadFiles(String uploadUrl, List<File> fileList, String type, final UploadListener listener) {
         if (api == null) {
             throw new IllegalStateException("LMImageUploader not initialized, call LMImageUploader.init(Config config) in your custom application class first!");
         }
-        List<MultipartBody.Part> partList = createPartList(fileList, type);
-        api.upload(uploadUrl, partList).enqueue(new Callback<UploadResultBean>() {
+        checkNotNull(uploadUrl, "uploadUrl is null.");
+        api.upload(uploadUrl, createPartList(fileList, type)).enqueue(new Callback<UploadResultBean>() {
             @Override
             public void onResponse(Call<UploadResultBean> call, Response<UploadResultBean> response) {
                 if (response.isSuccessful()) {
@@ -171,23 +170,55 @@ public class LMImageUploader {
     }
 
     /**
-     * 上传图片
+     * 上传图片到默认地址
+     *
+     * @param fileList 待上传的图片文件列表
+     * @param type     类型
+     * @param listener 回调接口
+     */
+    public static void uploadFiles(List<File> fileList, String type, UploadListener listener) {
+        uploadFiles(uploadUrl, fileList, type, listener);
+    }
+
+    /**
+     * 上传图片到指定地址
+     *
+     * @param uploadUrl 上传地址
+     * @param pathList  待上传的图片路径列表
+     * @param type      类型
+     * @param listener  回调接口
+     */
+    public static void upload(String uploadUrl, List<String> pathList, String type, UploadListener listener) {
+        uploadFiles(uploadUrl, createFileList(null, pathList, false), type, listener);
+    }
+
+    /**
+     * 上传图片到默认地址
      *
      * @param pathList 待上传的图片路径列表
      * @param type     类型
      * @param listener 回调接口
      */
-    public static void upload(List<String> pathList, String type, final UploadListener listener) {
-        List<File> fileList = new ArrayList<>();
-        for (String path : pathList) {
-            File file = new File(path);
-            fileList.add(file);
-        }
-        uploadFiles(fileList, type, listener);
+    public static void upload(List<String> pathList, String type, UploadListener listener) {
+        uploadFiles(createFileList(null, pathList, false), type, listener);
     }
 
     /**
-     * 将图片压缩之后再进行上传
+     * 将图片压缩之后再上传到指定地址
+     *
+     * @param uploadUrl 上传地址
+     * @param context   Context 对象
+     * @param pathList  待上传的图片路径列表
+     * @param type      类型
+     * @param listener  回调接口
+     */
+    public static void compressAndUpload(String uploadUrl, Context context, List<String> pathList,
+                                         String type, UploadListener listener) {
+        uploadFiles(uploadUrl, createFileList(context, pathList, true), type, listener);
+    }
+
+    /**
+     * 将图片压缩之后再上传到默认地址
      *
      * @param context  Context 对象
      * @param pathList 待上传的图片路径列表
@@ -196,11 +227,7 @@ public class LMImageUploader {
      */
     public static void compressAndUpload(Context context, List<String> pathList,
                                          String type, UploadListener listener) {
-        List<File> fileList = new ArrayList<>();
-        for (String path : pathList) {
-            fileList.add(ImageCompressFactory.getNewFile(context, path));
-        }
-        uploadFiles(fileList, type, listener);
+        uploadFiles(createFileList(context, pathList, true), type, listener);
     }
 
     private static void onError(int errorCode, String errorMessage, UploadListener listener) {
@@ -210,43 +237,72 @@ public class LMImageUploader {
     }
 
     /**
-     * 获取上传图片的 Observable 对象
+     * 获取上传图片到指定地址的 Observable 对象
+     *
+     * @param uploadUrl 上传地址
+     * @param fileList  待上传的图片文件列表
+     * @param type      类型
+     */
+    public static Observable<String> uploadFilesObservable(String uploadUrl, List<File> fileList, String type) {
+        if (api == null) {
+            throw new IllegalStateException("LMImageUploader not initialized, call LMImageUploader.init(Config config) in your custom application class first!");
+        }
+        checkNotNull(uploadUrl, "uploadUrl is null.");
+        return api.uploadObservable(uploadUrl, createPartList(fileList, type))
+                .map(new UploadMapFunction());
+    }
+
+    /**
+     * 获取上传图片到默认地址的 Observable 对象
      *
      * @param fileList 待上传的图片文件列表
      * @param type     类型
      */
     public static Observable<String> uploadFilesObservable(List<File> fileList, String type) {
-        if (fileList == null || fileList.isEmpty()) return Observable.just("");
-        return uploadPartList(createPartList(fileList, type));
+        return uploadFilesObservable(uploadUrl, fileList, type);
     }
 
     /**
-     * 获取上传图片的 Observable 对象
+     * 获取上传图片到指定地址的 Observable 对象
+     *
+     * @param uploadUrl 上传地址
+     * @param pathList  待上传的图片路径列表
+     * @param type      类型
+     */
+    public static Observable<String> uploadObservable(String uploadUrl, List<String> pathList, String type) {
+        return uploadFilesObservable(uploadUrl, createFileList(null, pathList, false), type);
+    }
+
+    /**
+     * 获取上传图片到默认地址的 Observable 对象
      *
      * @param pathList 待上传的图片路径列表
      * @param type     类型
      */
     public static Observable<String> uploadObservable(List<String> pathList, String type) {
-        if (pathList == null || pathList.isEmpty()) return Observable.just("");
-        return uploadPartList(createPartList(createFileList(null, pathList, false), type));
+        return uploadFilesObservable(createFileList(null, pathList, false), type);
     }
 
     /**
-     * 获取压缩图片并上传的 Observable 对象
+     * 将图片进行压缩，获取上传压缩后图片到指定地址的 Observable 对象
+     *
+     * @param uploadUrl 上传地址
+     * @param pathList  待上传的图片路径列表
+     * @param type      类型
+     */
+    public static Observable<String> compressAndUploadObservable(String uploadUrl, Context context, List<String> pathList, String type) {
+        return uploadFilesObservable(uploadUrl, createFileList(context, pathList, true), type);
+    }
+
+    /**
+     * 将图片进行压缩，获取上传压缩后图片到默认地址的 Observable 对象
      *
      * @param context  Context 对象
      * @param pathList 待上传的图片路径列表
      * @param type     类型
      */
     public static Observable<String> compressAndUploadObservable(Context context, List<String> pathList, String type) {
-        if (pathList == null || pathList.isEmpty()) return Observable.just("");
-        return uploadPartList(createPartList(createFileList(context, pathList, true), type));
-    }
-
-    private static Observable<String> uploadPartList(List<MultipartBody.Part> partList) {
-        if (partList == null || partList.isEmpty()) return Observable.just("");
-        return api.uploadObservable(uploadUrl, partList)
-                .map(new UploadMapFunction());
+        return uploadFilesObservable(createFileList(context, pathList, true), type);
     }
 
     private static class UploadMapFunction implements Function<UploadResultBean, String> {
@@ -301,5 +357,12 @@ public class LMImageUploader {
             }
         }
         return partList;
+    }
+
+    private static <T> T checkNotNull(T object, String message) {
+        if (object == null) {
+            throw new NullPointerException(message);
+        }
+        return object;
     }
 }
