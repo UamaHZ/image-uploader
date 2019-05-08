@@ -1,5 +1,10 @@
 # Change Log
 
+## Version 1.3.0 *(2019-05-08)*
+* `LMImageUploader` 新增包含上传地址的上传方法，支持动态指定上传地址。
+* `LMImageUploader` 新增 `isInit()` 方法，用于判断是否已经初始化。
+* 完善 Sample。
+
 ## Version 1.2.2 *(2019-04-30)*
 对文件名称进行 URL 编码，解决 Okhttp 版本为 3.12.* 时如果文件名称含有中文会崩溃的问题。
 
