@@ -6,13 +6,82 @@
     android:layout_height="match_parent"
     tools:context="cn.com.uama.imageuploader.sample.MainActivity">
 
-    <TextView
+    <Button
+        android:id="@+id/button_choose_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        android:text="选择图片"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/tv_selected_image_path"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_choose_image" />
+
+    <EditText
+        android:id="@+id/et_upload_url"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="自定义图片上传地址"
+        android:inputType="textUri"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_selected_image_path" />
+
+    <Button
+        android:id="@+id/button_upload"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="不压缩上传"
+        app:layout_constraintEnd_toStartOf="@id/button_compress_and_upload"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/et_upload_url" />
+
+    <Button
+        android:id="@+id/button_compress_and_upload"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="压缩后上传"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/button_upload"
+        app:layout_constraintTop_toTopOf="@id/button_upload" />
+
+    <Button
+        android:id="@+id/button_upload_observable"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Rx不压缩上传"
+        app:layout_constraintEnd_toStartOf="@id/button_compress_and_upload_observable"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_compress_and_upload" />
+
+    <Button
+        android:id="@+id/button_compress_and_upload_observable"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Rx压缩后上传"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/button_upload_observable"
+        app:layout_constraintTop_toTopOf="@id/button_upload_observable" />
+
+    <TextView
+        android:id="@+id/tv_upload_result"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_compress_and_upload_observable" />
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/button_compress_and_upload_observable" />
 </android.support.constraint.ConstraintLayout>

@@ -122,6 +122,13 @@ public class LMImageUploader {
     }
 
     /**
+     * 判断是否已经初始化
+     */
+    public static boolean isInit() {
+        return api != null;
+    }
+
+    /**
      * 上传图片到指定地址
      *
      * @param uploadUrl 上传地址
