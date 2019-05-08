@@ -39,6 +39,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int REQUEST_CODE_CHOOSE_IMAGE = 1;
     private static final int REQUEST_CODE_STORAGE_PERMISSION = 2;
 
+    public static final String EXTRA_SELECTED_IMAGE_PATH = "selectedImagePath";
+    public static final String EXTRA_CUSTOM_UPLOAD_URL= "customUploadUrl";
+    public static final String EXTRA_UPLOAD_RESULT = "uploadResult";
+
     TextView selectedImagePathView;
     TextView uploadResultView;
     EditText uploadUrlEditText;
@@ -97,9 +101,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.button_upload_observable).setOnClickListener(this);
         findViewById(R.id.button_compress_and_upload_observable).setOnClickListener(this);
 
+        if (savedInstanceState != null) {
+            selectedImagePath = savedInstanceState.getString(EXTRA_SELECTED_IMAGE_PATH);
+            selectedImagePathView.setText(selectedImagePath);
+            String customUploadUrl = savedInstanceState.getString(EXTRA_CUSTOM_UPLOAD_URL);
+            if (customUploadUrl != null) {
+                uploadUrlEditText.setText(customUploadUrl);
+                uploadUrlEditText.setSelection(customUploadUrl.length());
+            }
+            String uploadResult = savedInstanceState.getString(EXTRA_UPLOAD_RESULT);
+            uploadResultView.setText(uploadResult);
+        }
+
         if (!LMImageUploader.isInit()) {
             showInitDialog();
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(EXTRA_SELECTED_IMAGE_PATH, selectedImagePath);
+        outState.putString(EXTRA_CUSTOM_UPLOAD_URL, getCustomUploadUrl());
+        outState.putString(EXTRA_UPLOAD_RESULT, uploadResultView.getText().toString());
     }
 
     /**
